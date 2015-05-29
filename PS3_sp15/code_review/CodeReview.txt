@@ -1,0 +1,56 @@
+Stopwatch Code Review
+Chris Pac
+
+Bad style to have the class Stopwatch in the same file as StopwatchFactor. Stopwatch should have
+its own file.
+
+In StopwatchFactor line 17 and 21, unless required, interfaces should be used and not classes
+So List and not ArrayList.
+
+Unnecessary use of two different containers in StopwatchFactor (line 17 and 21). The map just 
+holds id to constant 1. What's the point of this being a map?  Why not simply have the 
+HashMap<String,IStopwatch>? Its seems that two containers are there so one could be directly 
+returned. It that case the map should be just a list or better a set.
+
+Stopwatch class uses 'this' as a lock. This means that anyone who has a reference to the Stopwatch
+object could use the same lock causing deadlock. A new internal and private lock should be 
+declared and used.
+
+If the locking is done on 'this' and its done for the entire scope of the function the 
+sugar synchronized syntax should be used to make it more readable. 
+
+** From now on any line numbers refer to StopwatchFactory.java **
+
+On line 48, [ myStopwatch.watchID = id; ], watchID is public and exposed. This assignment should
+be done through accessor method and watchID should be made final private. Or simply a custom 
+constructor should be used that takes a string. This eliminates the need for line 48 and makes 
+the code cleaner looking.
+
+On line 63 a defensive copy should be returned and not a reference to the list which could be
+modified outside of the class.  
+
+On line 117, [ watchID=="" ], a string has a isEmpty method which makes the code more readable.
+
+On line 221 a reference to the private Laps array is returned. This means that someone can modify
+the array outside of the class. Since ArrayList is not thread safe this could cause even more
+problems. A again a defensive copy of the array should be returned.
+
+On line 110 getID locks in order to return the id. This is unnecessary since there is no method
+to modify the id. Furthermore, the id, watchID, is made public thus making the locking pointless.
+
+Line 139 violates style requirements by putting the else on a separate line.
+
+The comments on line 113 and 121 are examples of unnecessary comments. The it is clear whats
+going on from the code.
+
+currentTimeMillis is system dependent and probably core dependent. For example, different
+systems may returned time units at different granularity. It is probably also possible for
+two different cores to return none-increasing time values. It is best practice to use nanoTime
+which only depends on JVM.
+
+Getting a time reading after locking may cause incorrect lap times if the thread waits an extended
+period of time for a lock.
+
+Extra @author tag.
+
+

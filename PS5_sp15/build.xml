@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="help" name="CanvasApp">
+  <property name="src.dir" value="src"/>
+  <property name="test.dir" value="testsrc"/>
+  <property name="build.dir" value="bin"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="jar.dir" value="${build.dir}/jar"/>
+  <property name="doc.dir" value="doc"/>
+
+  <property name="main-class" value="edu.nyu.pqs.canvas.app.CanvasApp"/>
+  
+  <property name="junit.dir"         value="junit"/>
+  <property name="junit.test.dir"    value="${junit.dir}/test"/>
+  <property name="junit.report.dir"  value="${junit.dir}/report"/>
+  
+  <path id="compile.classpth">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
+  
+  <path id="junit.classpth">
+    <path refid="compile.classpth"/>
+  </path>
+  
+  <!-- ================================= 
+          target: help              
+         ================================= -->
+  <target name="help" description="Prints available targets">
+    <echo>The following targets are available:</echo>
+    <echo>help     : (default) Prints this message.</echo>
+    <echo>all      : Cleans, compiles, tests, packages, documents, and runs this application</echo>
+    <echo>compile  : Complies source tree java files to ${build.dir} directory.</echo>
+    <echo>run      : Runs the ${ant.project.name}.</echo>
+    <echo>jar      : Creates a ${ant.project.name}.jar file in ${jar.dir} directory.</echo>
+    <echo>clean    : Deletes the build directory.</echo>
+    <echo>cleanall : Deletes all output directories.</echo>
+    <echo>test     : Runs JUnit tests and places results in ${junit.test.dir} directory.</echo>
+    <echo>report   : Generates JUnit tests html report in ${junit.report.dir} directory.</echo>
+    <echo>doc      : Generates javadocs in ${doc.dir} directory.</echo>
+  </target>
+  
+  <!-- ================================= 
+          target: all              
+         ================================= -->
+  <target name="all" depends="cleanall, compile, jar, test, report, doc, run"
+    description="Cleans, compiles, tests, packages, documents, and runs this app">
+  </target>
+
+  <!-- ================================= 
+          target: compile              
+         ================================= -->
+  <target name="compile" description="Complies source tree java files">
+    <mkdir dir="${build.dir}"/>
+    <javac destdir="${build.dir}" includeAntRuntime="false" classpathref="compile.classpth">
+      <src path="${src.dir}"/>
+      <src path="${test.dir}"/>
+    </javac>
+  </target>
+
+  <!-- ================================= 
+          target: run              
+         ================================= -->
+  <target name="run" depends="compile" description="Runs the main class">
+     <java dir="${build.dir}" fork="true" failonerror="yes" classname="${main-class}"/>
+  </target>
+
+  <!-- ================================= 
+          target: jar              
+         ================================= -->
+  <target name="jar" depends="compile" description="Creates a jar file">
+    <delete dir="${jar.dir}"/>
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${build.dir}" update="true" 
+      excludes = "**/*Test.class">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- ================================= 
+          target: clean              
+         ================================= -->
+  <target name="clean" description="Deletes the build directory">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <!-- ================================= 
+          target: cleanall              
+         ================================= -->
+  <target name="cleanall" depends="clean" description="Deletes all output directories">
+    <delete dir="${junit.dir}"/>
+    <delete dir="${doc.dir}"/>
+  </target>
+
+  <!-- ================================= 
+          target: test              
+         ================================= -->
+  <target name="test" depends="compile" description="Runs JUnit tests">
+    <mkdir dir="${junit.test.dir}"/>
+    <junit fork="yes" printsummary="withOutAndErr">
+      <classpath>
+        <pathelement location="${build.dir}"/>
+        <path refid="junit.classpth"/>
+      </classpath>
+      <formatter type="xml"/>
+      <batchtest todir="${junit.test.dir}">
+        <fileset dir="${test.dir}"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!-- ================================= 
+          target: report              
+         ================================= -->
+  <target name="report" depends="test" description="Generates JUnit tests html report">
+    <mkdir dir="${junit.report.dir}"/>
+    <junitreport todir="${junit.test.dir}">
+      <fileset dir="${junit.test.dir}" includes="TEST-*.xml"/>
+      <report todir="${junit.report.dir}"/>
+    </junitreport>
+  </target>
+  
+  <!-- ================================= 
+          target: doc              
+         ================================= -->
+  <target name="doc" description="Generates javadocs">
+     <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" author="true" version="true" use="true"
+       windowtitle = "Canvas Application">
+       <doctitle><![CDATA[= CanvasApp =]]></doctitle>
+       <bottom>
+         <![CDATA[Copyright © 2015. All Rights Reserved.]]>
+       </bottom>
+     </javadoc>
+  </target>
+  
+</project>

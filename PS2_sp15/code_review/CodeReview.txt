@@ -1,0 +1,70 @@
+The package name should be all lower case and extended to prevent conflicts in the future. 
+
+Incorrect indentation all over the place.
+
+*************************** *************************** ***************************
+PostalAddress class has the following issue:
+
+Constructor declares that it will throw an exception but doesn't and it doesn't 
+check the validity of the input (i.e. null or empty).
+
+The address is just reduced to three strings. No street name, no apartment number etc... 
+these things are common enough that they should have been included as separate fields.
+
+No javadocs for most of the methods.
+
+Meaning of method names like getLine1, getLine2, etc.. is not easily understood. 
+
+checkIO method doesn't do anything.
+
+*************************** *************************** ***************************
+EntryField class should probably have been an interface not abstract class.
+
+*************************** *************************** ***************************
+PhoneNumber class suffers from similar problems as PostalAddress.
+
+checkIO returns false without doing anything while it returns true (without doing anything) in 
+PostalAddress… confusing and no comments.
+
+PhoneNumber simplified to a single string.
+
+*************************** *************************** ***************************
+Note class has deficient javadocs (i.e. not descriptive enough or missing)
+
+
+*************************** *************************** ***************************
+InvalidIOException is an unnecessary custom exception class that is not even intuitively named 
+for the 3 or 4 places that it shows up. Java has lots of exceptions that would have been more appropriate. 
+For example IllegalArgumentException or NullPointerException.
+
+ 
+*************************** *************************** ***************************
+Entry class should override equals and hash code and maybe toString.
+
+I'm not an expert in java but the members in Entry are final but getters return reference 
+to those members. Defensive copies should have been made or those members themselves should 
+have been made immutable.
+
+
+*************************** *************************** ***************************
+AddressBook problems:
+Unhandled type safety warning.
+Uses Serializable to save and load from file.
+The enum declaration could have been avoided since we would probably want to search by individual 
+fields like name or phone number and not an entire entry.
+
+*************************** *************************** ***************************
+/*********************************** Summary *************************************/
+
+Deficient javadocs - very little documentation. No indication if getters will return null, empty or what.
+No input checks in constructors or setters.
+Primitive obsession(i.e. everything seems to be a string)
+Warning not handled
+Unnecessary exception class
+Class members could have used more verbose names (i.e. instead of using ea or pn, email 
+and phoneNumber should have been used).
+
+The simple classes like Note, PhoneNumber, etc could have been made immutable.
+
+
+
